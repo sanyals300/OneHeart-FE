@@ -19,7 +19,7 @@ const Feed = () => {
 
     try {
       console.log("Making API call to /feed...");
-      const res = await axios.get("http://localhost:3000/feed", {
+      const res = await axios.get("/api/feed", {
         withCredentials: true,
       });
 
@@ -47,7 +47,7 @@ const Feed = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/request/send/${action}/${userId}`,
+        `/api/request/send/${action}/${userId}`,
         {},
         {
           withCredentials: true,

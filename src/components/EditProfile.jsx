@@ -26,7 +26,7 @@ const EditProfile = ({ user }) => {
         about,
       });
       const res = await axios.put(
-        "http://localhost:3000/profile/edit",
+        "/api/profile/edit",
         { firstName, lastName, gender, age, photoUrl, about },
         { withCredentials: true }
       );

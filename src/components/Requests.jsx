@@ -14,12 +14,9 @@ const Requests = () => {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get(
-        "http://localhost:3000/user/requests/received",
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get("/api/user/requests/received", {
+        withCredentials: true,
+      });
 
       console.log("API Response:", res.data);
       console.log("Requests data:", res.data.data);
@@ -48,7 +45,7 @@ const Requests = () => {
       const requestId = request._id;
 
       const res = await axios.post(
-        `http://localhost:3000/request/review/accepted/${requestId}`,
+        `/api/request/review/accepted/${requestId}`,
         {},
         { withCredentials: true }
       );
@@ -67,7 +64,7 @@ const Requests = () => {
       const requestId = request._id;
 
       const res = await axios.post(
-        `http://localhost:3000/request/review/rejected/${requestId}`,
+        `/api/request/review/rejected/${requestId}`,
         {},
         { withCredentials: true }
       );
