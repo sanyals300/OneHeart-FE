@@ -45,9 +45,9 @@ const EditProfile = ({ user }) => {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen gap-8">
-        <div className="flex justify-center mx-10">
-          <div className="card bg-base-100 w-96 shadow-sm border-2 my-2">
+      <div className="flex flex-col lg:flex-row justify-center items-center min-h-screen gap-8 px-4 py-8">
+        <div className="flex justify-center w-full lg:w-auto">
+          <div className="card bg-base-100 w-full max-w-md shadow-sm border-2 my-2">
             <div className="card-body">
               <h2 className="card-title">Edit Profile</h2>
               <div>
@@ -58,7 +58,7 @@ const EditProfile = ({ user }) => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
               </div>
@@ -70,7 +70,7 @@ const EditProfile = ({ user }) => {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
                 <fieldset className="fieldset">
@@ -80,7 +80,7 @@ const EditProfile = ({ user }) => {
                     value={photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
                 <fieldset className="fieldset">
@@ -90,7 +90,7 @@ const EditProfile = ({ user }) => {
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
                 <fieldset className="fieldset">
@@ -100,7 +100,7 @@ const EditProfile = ({ user }) => {
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
                 <fieldset className="fieldset">
@@ -110,7 +110,7 @@ const EditProfile = ({ user }) => {
                     value={about}
                     onChange={(e) => setAbout(e.target.value)}
                     placeholder="Type here"
-                    className="input border-2 shadow-sm bg-base-300 my-0.5"
+                    className="input border-2 shadow-sm bg-base-300 my-0.5 w-full"
                   />
                 </fieldset>
               </div>
@@ -123,9 +123,11 @@ const EditProfile = ({ user }) => {
             </div>
           </div>
         </div>
-        <UserCard
-          user={{ firstName, lastName, age, gender, photoUrl, about }}
-        />
+        <div className="w-full lg:w-auto flex justify-center">
+          <UserCard
+            user={{ firstName, lastName, age, gender, photoUrl, about }}
+          />
+        </div>
       </div>
       {showToast && (
         <div className="toast toast-top toast-center">
