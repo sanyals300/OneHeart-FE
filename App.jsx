@@ -6,29 +6,25 @@ import Profile from "./src/components/Profile";
 import { Provider } from "react-redux";
 import appStore from "./src/utils/appStore";
 import Feed from "./src/components/Feed";
-import { useEffect } from "react";
 import Connections from "./src/components/Connections";
 import Requests from "./src/components/Requests";
+import Chat from "./src/components/Chat";
 
 function App() {
-  useEffect(() => {
-    // Force set the theme
-    document.documentElement.setAttribute("data-theme", "valentine");
-    console.log(
-      "Theme set to:",
-      document.documentElement.getAttribute("data-theme")
-    );
-  }, []);
   return (
-    <div data-theme="valentine" className="min-h-screen">
+    <div className="min-h-screen">
       <Provider store={appStore}>
         <BrowserRouter basename="/">
           <Routes>
-            <Route path="/" element={<Body />}>
+            {/* Public route that does NOT have the Navbar */}
+            <Route path="/login" element={<Login />} />
+
+            {/* Protected routes that ALL use the Body layout (with Navbar) */}
+            <Route element={<Body />}>
               <Route path="/" element={<Feed />} />
-              <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/connections" element={<Connections />} />
+              <Route path="/messages/:targetUserId" element={<Chat />} />
               <Route path="/requests" element={<Requests />} />
             </Route>
           </Routes>

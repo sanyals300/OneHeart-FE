@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnections } from "../utils/connectionSlice";
+import { Link } from "react-router-dom";
 
 const Connections = () => {
   const connections = useSelector((store) => store.connections);
@@ -9,7 +10,7 @@ const Connections = () => {
 
   const fetchConnections = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/user/connections", {
+      const res = await axios.get("/api/user/connections", {
         withCredentials: true,
       });
       console.log(res.data.data);
@@ -24,120 +25,107 @@ const Connections = () => {
   }, []);
 
   if (!connections) {
-    return <div className="text-center mt-10">Loading connections...</div>;
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px", color: "#fff" }}>
+        Loading connections...
+      </div>
+    );
   }
 
   if (connections.length === 0) {
     return (
-      <div className="text-center mt-10">
-        <h1 className="text-2xl font-bold mb-4">Connections</h1>
-        <p className="text-gray-600">No connections found yet</p>
+      <div style={{ textAlign: "center", marginTop: "50px", color: "#fff" }}>
+        <h1 style={{ fontSize: "28px", marginBottom: "10px" }}>Connections</h1>
+        <p style={{ opacity: 0.7 }}>No connections found yet</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center my-10 px-4">
-      <h1 className="font-bold text-3xl text-center mb-8">My Connections</h1>
-      <div className="w-full max-w-4xl space-y-4">
+    <div>
+      <div className="connections-header">
+        <h1 style={{ fontSize: "36px", fontWeight: "bold" }}>My Connections</h1>
+      </div>
+
+      <div className="connections-container">
         {connections.map((connection) => (
-          <div
-            key={connection._id}
-            className="flex flex-col md:flex-row items-center md:items-start p-6 bg-base-300 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-          >
-            {/* Avatar Section */}
-            <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-              <div className="avatar">
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full">
-                  {connection.photoUrl ? (
-                    <img
-                      src={connection.photoUrl}
-                      alt={connection.firstName}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                      <span className="text-white text-2xl font-bold">
-                        {connection.firstName?.[0]?.toUpperCase() || "?"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="flex-1 text-center md:text-left">
-              {/* Name and Basic Info */}
-              <div className="mb-3">
-                <h2 className="text-2xl font-bold text-base-content mb-1">
-                  {connection.firstName} {connection.lastName}
-                </h2>
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 text-sm">
-                  {connection.age && (
-                    <span className="badge badge-outline badge-primary">
-                      {connection.age} years old
-                    </span>
-                  )}
-                  {connection.gender && (
-                    <span className="badge badge-outline badge-secondary">
-                      {connection.gender}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* About Section */}
-              {connection.about && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-base-content/80 mb-2">
-                    About
-                  </h3>
-                  <p className="text-base-content/70 leading-relaxed">
-                    {connection.about}
-                  </p>
+          <div key={connection._id} className="profile-card">
+            <div className="profile-image">
+              {connection.photoUrl ? (
+                <img src={connection.photoUrl} alt={connection.firstName} />
+              ) : (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "48px",
+                    fontWeight: "bold",
+                    color: "#fff",
+                  }}
+                >
+                  {connection.firstName?.[0]?.toUpperCase() || "?"}
                 </div>
               )}
-
-              {/* Additional Info */}
-              <div className="flex flex-wrap justify-center md:justify-start gap-2 text-xs">
-                {connection.skills && connection.skills.length > 0 && (
-                  <>
-                    {connection.skills.slice(0, 3).map((skill, index) => (
-                      <span key={index} className="badge badge-ghost badge-sm">
-                        {skill}
-                      </span>
-                    ))}
-                    {connection.skills.length > 3 && (
-                      <span className="badge badge-ghost badge-sm">
-                        +{connection.skills.length - 3} more
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
             </div>
 
-            {/* Action Section */}
-            <div className="flex-shrink-0 mt-4 md:mt-0 md:ml-4">
-              <div className="flex flex-col gap-2">
-                <button className="btn btn-secondary btn-sm">Message</button>
-                <button className="btn btn-ghost btn-sm">View Profile</button>
+            <div className="profile-content">
+              <h2>
+                {connection.firstName} {connection.lastName}
+              </h2>
+
+              <div className="profile-info">
+                {connection.age && <span>{connection.age} years old</span>}
+                {connection.age && connection.gender && <span> • </span>}
+                {connection.gender && <span>{connection.gender}</span>}
+              </div>
+
+              {connection.about && (
+                <div className="profile-about">{connection.about}</div>
+              )}
+
+              <div className="social-links">
+                <Link to={`/messages/${connection._id}`} title="Message">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </Link>
+                <a href="#" title="View Profile">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Connection Stats */}
-      <div className="mt-8 text-center">
-        <div className="stats stats-horizontal shadow">
-          <div className="stat">
-            <div className="stat-title">Total Connections</div>
-            <div className="stat-value text-primary">{connections.length}</div>
-            <div className="stat-desc">Active connections</div>
-          </div>
-        </div>
+      <div className="connections-stats">
+        <div className="stat-title">Total Connections</div>
+        <div className="stat-value">{connections.length}</div>
+        <div className="stat-desc">Active connections</div>
       </div>
     </div>
   );

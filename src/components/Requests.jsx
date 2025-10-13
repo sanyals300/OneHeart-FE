@@ -13,69 +13,31 @@ const Requests = () => {
     try {
       setLoading(true);
       setError(null);
-
-      const res = await axios.get(
-        "http://localhost:3000/user/requests/received",
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log("API Response:", res.data);
-      console.log("Requests data:", res.data.data);
-
-      // Ensure we're dispatching an array
-      const requestsData = res.data?.data || res.data || [];
+      const res = await axios.get("/api/user/requests/received", {
+        withCredentials: true,
+      });
+      const requestsData = res.data?.data || [];
       if (Array.isArray(requestsData)) {
         dispatch(addRequests(requestsData));
       } else {
-        console.error("API response is not an array:", requestsData);
         dispatch(addRequests([]));
       }
     } catch (err) {
       console.error("Error fetching requests:", err);
       setError(err.message || "Failed to fetch requests");
-      dispatch(addRequests([])); // Set empty array on error
+      dispatch(addRequests([]));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAccept = async (request) => {
+  const handleAction = async (action, requestId) => {
+    const url = `/api/request/review/${action}/${requestId}`;
     try {
-      console.log("Accept request:", request);
-      // Use the request ID, not user ID
-      const requestId = request._id;
-
-      const res = await axios.post(
-        `http://localhost:3000/request/review/accepted/${requestId}`,
-        {},
-        { withCredentials: true }
-      );
-      console.log("Request accepted successfully:", res.data);
-      // Refresh requests after accepting
-      fetchRequests();
+      await axios.post(url, {}, { withCredentials: true });
+      fetchRequests(); // Refresh the list after any action
     } catch (err) {
-      console.error("Error accepting request:", err);
-    }
-  };
-
-  const handleReject = async (request) => {
-    try {
-      console.log("Reject request:", request);
-      // Use the request ID, not user ID
-      const requestId = request._id;
-
-      const res = await axios.post(
-        `http://localhost:3000/request/review/rejected/${requestId}`,
-        {},
-        { withCredentials: true }
-      );
-      console.log("Request rejected successfully:", res.data);
-      // Refresh requests after rejecting
-      fetchRequests();
-    } catch (err) {
-      console.error("Error rejecting request:", err);
+      console.error(`Error ${action}ing request:`, err);
     }
   };
 
@@ -84,95 +46,77 @@ const Requests = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <div className="requests-state-container">Loading requests...</div>;
   }
 
   if (error) {
     return (
-      <div className="text-center mt-10">
-        <h1 className="text-2xl font-bold mb-4">Connection Requests</h1>
-        <p className="text-red-600">Error: {error}</p>
-        <button className="btn btn-primary mt-4" onClick={fetchRequests}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  if (!requests || !Array.isArray(requests) || requests.length === 0) {
-    return (
-      <div className="text-center mt-10">
-        <h1 className="text-2xl font-bold mb-4">Connection Requests</h1>
-        <p className="text-gray-600">No pending requests found</p>
+      <div className="requests-state-container">
+        <h2>Error Fetching Requests</h2>
+        <p style={{ opacity: 0.7, marginTop: "10px" }}>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col justify-center my-10">
-      <h1 className="font-bold text-2xl text-center mb-6">
-        Connection Requests
-      </h1>
-      {requests.map((request) => {
-        // Add safety checks for request structure
-        if (!request || !request._id) {
-          console.warn("Invalid request object:", request);
-          return null;
-        }
+    <div className="requests-container">
+      <div className="requests-list-card">
+        <h1 className="requests-header">Connection Requests</h1>
+        {!requests || requests.length === 0 ? (
+          <div className="requests-state-container" style={{ padding: "20px" }}>
+            <p>No pending requests found.</p>
+          </div>
+        ) : (
+          requests.map((request) => {
+            if (!request || !request._id) return null;
+            const user = request.fromUserId;
 
-        const user = request.fromUserId; // This contains the populated user data
-
-        return (
-          <div
-            key={request._id}
-            className="flex items-center justify-between p-4 m-2 bg-base-300 rounded-lg shadow-md max-w-4xl mx-auto"
-          >
-            <div className="flex items-center">
-              <div className="avatar">
-                <div className="w-16 rounded-full">
-                  {user?.photoUrl ? (
-                    <img
-                      src={user.photoUrl}
-                      alt={user.firstName || "User"}
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-neutral flex items-center justify-center">
-                      <span className="text-neutral-content text-xl">
-                        {user?.firstName?.[0] || "?"}
-                      </span>
-                    </div>
-                  )}
+            return (
+              <div key={request._id} className="request-item">
+                <div className="request-user-info">
+                  <div className="request-avatar">
+                    {user?.photoUrl ? (
+                      <img src={user.photoUrl} alt={user.firstName || "User"} />
+                    ) : (
+                      <div className="request-avatar-initials">
+                        <span>
+                          {user?.firstName?.[0]?.toUpperCase() || "?"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="request-text-content">
+                    <h2 className="request-name">
+                      {user?.firstName || "Unknown"} {user?.lastName || ""}
+                    </h2>
+                    <p className="request-details">
+                      {user?.age ? `${user.age}, ` : ""}
+                      {user?.gender || ""}
+                    </p>
+                    {user?.about && (
+                      <p className="request-about">{user.about}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="request-actions">
+                  <button
+                    className="request-btn request-btn-accept"
+                    onClick={() => handleAction("accepted", request._id)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="request-btn request-btn-reject"
+                    onClick={() => handleAction("rejected", request._id)}
+                  >
+                    Reject
+                  </button>
                 </div>
               </div>
-              <div className="ml-4">
-                <h2 className="text-xl font-semibold">
-                  {user?.firstName || "Unknown"} {user?.lastName || ""}
-                </h2>
-                <p className="text-sm opacity-70">
-                  {user?.age ? `${user.age}, ` : ""}
-                  {user?.gender || ""}
-                </p>
-                {user?.about && <p className="text-sm mt-1">{user.about}</p>}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => handleAccept(request)}
-              >
-                Accept
-              </button>
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={() => handleReject(request)}
-              >
-                Reject
-              </button>
-            </div>
-          </div>
-        );
-      })}
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };

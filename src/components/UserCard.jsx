@@ -13,35 +13,41 @@ const UserCard = ({ user, onUserAction, isLoading }) => {
     }
   };
 
+  // Combine first name and last name if it exists
+  const displayName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
   return (
-    <div className="card bg-base-300 w-96 shadow-lg border-2">
+    <div className="glass-user-card">
       <figure>
         <img
-          src={user.photoUrl}
-          alt={user.firstName}
-          className="h-80 w-full object-cover"
+          src={user.photoUrl || "https://via.placeholder.com/400"} // Added a fallback image
+          alt={displayName}
         />
       </figure>
-      <div className="card-body">
-        <h2 className="card-title">{user.firstName}</h2>
-        <p>{user.age}</p>
-        <p>{user.about}</p>
-        <div className="card-actions justify-center my-3">
-          <button
-            className="btn btn-primary"
-            onClick={handleIgnore}
-            disabled={isLoading}
-          >
-            {isLoading ? "..." : "Ignore"}
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={handleInterested}
-            disabled={isLoading}
-          >
-            {isLoading ? "..." : "Interested"}
-          </button>
-        </div>
+
+      <div className="glass-card-body">
+        <h2 className="glass-card-title">
+          {displayName},{" "}
+          <span style={{ fontWeight: "normal", opacity: 0.9 }}>{user.age}</span>
+        </h2>
+        <p className="glass-card-info">{user.about}</p>
+      </div>
+
+      <div className="glass-card-actions">
+        <button
+          className="action-button action-button-ignore"
+          onClick={handleIgnore}
+          disabled={isLoading}
+        >
+          {isLoading ? "..." : "Ignore"}
+        </button>
+        <button
+          className="action-button action-button-interested"
+          onClick={handleInterested}
+          disabled={isLoading}
+        >
+          {isLoading ? "..." : "Interested"}
+        </button>
       </div>
     </div>
   );

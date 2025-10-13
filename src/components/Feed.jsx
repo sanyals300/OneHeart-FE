@@ -13,29 +13,19 @@ const Feed = () => {
   const [error, setError] = useState(null);
 
   const getFeed = async () => {
-    console.log("getFeed called, current feed:", feed);
     setLoading(true);
     setError(null);
-
     try {
-      console.log("Making API call to /feed...");
-      const res = await axios.get("http://localhost:3000/feed", {
+      const res = await axios.get("/api/feed", {
         withCredentials: true,
       });
-
-      console.log("Feed API response:", res.data);
-      console.log("Response length:", res.data?.length);
-
       if (res.data && Array.isArray(res.data)) {
         dispatch(addFeed(res.data));
         setLocalFeed(res.data);
-        console.log("Feed updated in Redux and local state");
       } else {
-        console.log("Invalid feed data format:", res.data);
         setError("Invalid feed data received");
       }
     } catch (err) {
-      console.log("Error fetching feed:", err);
       setError("Failed to fetch feed: " + err.message);
     } finally {
       setLoading(false);
@@ -43,49 +33,27 @@ const Feed = () => {
   };
 
   const handleUserAction = async (action, userId) => {
-    console.log("Action:", action, "for user:", userId);
-
     try {
-      const response = await axios.post(
-        `http://localhost:3000/request/send/${action}/${userId}`,
+      await axios.post(
+        `/api/request/send/${action}/${userId}`,
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-      console.log("Backend response:", response.data);
-
+    } catch (err) {
+      console.error("Error sending action:", err.response?.data || err.message);
+    } finally {
+      // Always move to the next user
       const currentFeedData = localFeed || feed;
-      console.log(
-        "Current feed length:",
-        currentFeedData?.length,
-        "Current index:",
-        currentUserIndex
-      );
-
-      // Move to next user
       if (currentUserIndex < currentFeedData.length - 1) {
         setCurrentUserIndex((prev) => prev + 1);
-        console.log("Moving to next user, new index:", currentUserIndex + 1);
       } else {
-        console.log("No more users in current feed, fetching new ones...");
         await getFeed();
         setCurrentUserIndex(0);
-      }
-    } catch (err) {
-      console.log("Error sending action:", err.response?.data || err.message);
-      // Move to next user even on error
-      const currentFeedData = localFeed || feed;
-      if (currentUserIndex < currentFeedData.length - 1) {
-        setCurrentUserIndex((prev) => prev + 1);
-      } else {
-        setCurrentUserIndex(currentFeedData.length);
       }
     }
   };
 
   useEffect(() => {
-    console.log("Feed component mounted");
     if (!feed && !localFeed) {
       getFeed();
     } else {
@@ -93,26 +61,14 @@ const Feed = () => {
     }
   }, []);
 
-  // Use local feed if available, otherwise use Redux feed
   const currentFeedData = localFeed || feed;
-
-  console.log(
-    "Render - Loading:",
-    loading,
-    "Error:",
-    error,
-    "Feed length:",
-    currentFeedData?.length,
-    "Current index:",
-    currentUserIndex
-  );
 
   if (loading) {
     return (
-      <div className="flex justify-center my-10">
-        <div className="text-center">
-          <div className="loading loading-spinner loading-lg"></div>
-          <p className="mt-4">Loading users...</p>
+      <div className="feed-container">
+        <div className="themed-loader-container">
+          <div className="themed-loader"></div>
+          <p className="themed-loader-text">Finding users for you...</p>
         </div>
       </div>
     );
@@ -120,17 +76,13 @@ const Feed = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center my-10">
-        <div className="card bg-base-300 w-96 shadow-lg border-2">
-          <div className="card-body text-center">
-            <h2 className="card-title justify-center text-error">Error</h2>
-            <p>{error}</p>
-            <div className="card-actions justify-center my-3">
-              <button className="btn btn-primary" onClick={getFeed}>
-                Retry
-              </button>
-            </div>
-          </div>
+      <div className="feed-container">
+        <div className="feed-state-card">
+          <h2 className="feed-state-title error">Oops! An Error Occurred</h2>
+          <p className="feed-state-message">{error}</p>
+          <button className="feed-state-button" onClick={getFeed}>
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -138,17 +90,15 @@ const Feed = () => {
 
   if (!currentFeedData || currentFeedData.length === 0) {
     return (
-      <div className="flex justify-center my-10">
-        <div className="card bg-base-300 w-96 shadow-lg border-2">
-          <div className="card-body text-center">
-            <h2 className="card-title justify-center">No Users Found</h2>
-            <p>No users available in your feed.</p>
-            <div className="card-actions justify-center my-3">
-              <button className="btn btn-primary" onClick={getFeed}>
-                Refresh
-              </button>
-            </div>
-          </div>
+      <div className="feed-container">
+        <div className="feed-state-card">
+          <h2 className="feed-state-title">No Users Found</h2>
+          <p className="feed-state-message">
+            There are no new users available in your area right now.
+          </p>
+          <button className="feed-state-button" onClick={getFeed}>
+            Refresh
+          </button>
         </div>
       </div>
     );
@@ -156,41 +106,30 @@ const Feed = () => {
 
   if (currentUserIndex >= currentFeedData.length) {
     return (
-      <div className="flex justify-center my-10">
-        <div className="card bg-base-300 w-96 shadow-lg border-2">
-          <div className="card-body text-center">
-            <h2 className="card-title justify-center">No More Users!</h2>
-            <p>
-              You've seen all available users. Check back later for new
-              profiles!
-            </p>
-            <div className="card-actions justify-center my-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setCurrentUserIndex(0);
-                  getFeed();
-                }}
-              >
-                Refresh
-              </button>
-            </div>
-          </div>
+      <div className="feed-container">
+        <div className="feed-state-card">
+          <h2 className="feed-state-title">That's Everyone!</h2>
+          <p className="feed-state-message">
+            You've seen all available users. Check back later for new profiles!
+          </p>
+          <button
+            className="feed-state-button"
+            onClick={() => {
+              setCurrentUserIndex(0);
+              getFeed();
+            }}
+          >
+            Refresh Feed
+          </button>
         </div>
       </div>
     );
   }
 
   const currentUser = currentFeedData[currentUserIndex];
-  console.log(
-    "Rendering user:",
-    currentUser?.firstName,
-    "at index:",
-    currentUserIndex
-  );
 
   return (
-    <div className="flex justify-center my-10">
+    <div className="feed-container">
       <UserCard user={currentUser} onUserAction={handleUserAction} />
     </div>
   );

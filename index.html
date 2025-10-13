@@ -1,12 +1,1070 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="valentine">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OneHeart</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-image: url("/diwalibg.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 0;
+      }
+
+      .lights {
+        --color-1: 255, 249, 82;
+        --color-2: 0, 234, 255;
+        --color-3: 247, 0, 148;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        display: flex;
+        justify-content: center;
+        flex-flow: wrap;
+        gap: 30px 40px;
+        padding: 5px 0;
+        pointer-events: none;
+      }
+
+      .lights li {
+        flex: none;
+        position: relative;
+        list-style: none;
+        width: 15px;
+        height: 30px;
+        border-radius: 50%;
+      }
+
+      .lights li:before {
+        position: absolute;
+        content: "";
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 10px;
+        height: 10px;
+        background-color: #222;
+        border-radius: 100%;
+      }
+
+      .lights li:after {
+        position: absolute;
+        content: "";
+        z-index: -1;
+        top: -2px;
+        left: 50%;
+        width: 54px;
+        height: 5px;
+        border-bottom: 1px solid #222;
+        border-radius: 100%;
+      }
+
+      .lights li:last-child:after {
+        display: none;
+      }
+
+      .lights li {
+        background-color: rgba(var(--color-1), 1);
+        box-shadow: 0 5px 24px 3px rgba(var(--color-1), 1);
+        animation: lighting-1 1.25s infinite linear;
+      }
+
+      @keyframes lighting-1 {
+        50% {
+          background-color: rgba(var(--color-1), 0.25);
+          box-shadow: 0 5px 24px 3px rgba(var(--color-1), 0.25);
+        }
+      }
+
+      .lights li:nth-child(odd) {
+        background-color: rgba(var(--color-2), 1);
+        box-shadow: 0 5px 24px 3px rgba(var(--color-2), 0.8);
+        animation: lighting-2 1.5s infinite linear;
+      }
+
+      @keyframes lighting-2 {
+        50% {
+          background-color: rgba(var(--color-2), 0.4);
+          box-shadow: 0 5px 24px 3px rgba(var(--color-2), 0.3);
+        }
+      }
+
+      .lights li:nth-child(4n + 2) {
+        background-color: rgba(var(--color-3), 1);
+        box-shadow: 0 5px 24px 3px rgba(var(--color-3), 1);
+        animation: lighting-3 1.5s infinite linear;
+        animation-delay: 1.25s;
+      }
+
+      @keyframes lighting-3 {
+        50% {
+          background-color: rgba(var(--color-3), 0.25);
+          box-shadow: 0 5px 24px 3px rgba(var(--color-3), 0.25);
+        }
+      }
+
+      #root {
+        position: relative;
+        z-index: 1;
+        padding-top: 50px;
+      }
+
+      /*  //////////////////////////////////////////////////*/
+      /* Profile Card Styles */
+      .profile-card {
+        position: relative;
+        width: 300px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 30px 30px 5px rgba(109, 109, 109, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transition: 0.5s;
+        overflow: hidden;
+      }
+
+      .profile-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 35px 35px 5px rgba(109, 109, 109, 0.3);
+      }
+
+      .profile-card .profile-image {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-top: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-card .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .profile-card .profile-content {
+        text-align: center;
+        padding: 20px;
+        color: #fff;
+      }
+
+      .profile-card .profile-content h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 10px 0 5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .profile-card .profile-content .profile-info {
+        font-size: 14px;
+        opacity: 0.8;
+        margin: 5px 0;
+      }
+
+      .profile-card .profile-content .profile-about {
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 15px 0;
+        opacity: 0.9;
+        max-height: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .profile-card .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        justify-content: center;
+      }
+
+      .profile-card .social-links a {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #fff;
+        transition: 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-card .social-links a:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: translateY(-3px);
+      }
+
+      .connections-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .connections-header {
+        text-align: center;
+        color: #fff;
+        margin: 30px 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .connections-stats {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 15px 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      .connections-stats .stat-title {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+
+      .connections-stats .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 5px 0;
+      }
+
+      .connections-stats .stat-desc {
+        font-size: 11px;
+        opacity: 0.7;
+      }
+      /* ////////////////////////////////////////////// */
+      /* Container for the whole Edit Profile page */
+      .edit-profile-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 30px;
+        padding: 20px; /* Reduced padding */
+        min-height: calc(100vh - 80px);
+      }
+
+      /* The main form card, styled like your profile cards */
+      .edit-profile-card {
+        width: 100%;
+        max-width: 400px; /* Slightly smaller max-width */
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 30px rgba(0, 0, 0, 0.2);
+        padding: 25px 30px; /* Reduced padding */
+        color: #fff;
+      }
+
+      .form-title {
+        font-size: 24px; /* Reduced font size */
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 20px; /* Reduced margin */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .form-group {
+        margin-bottom: 15px; /* Reduced margin */
+      }
+
+      .form-label {
+        display: block;
+        font-size: 13px; /* Reduced font size */
+        margin-bottom: 5px; /* Reduced margin */
+        opacity: 0.8;
+      }
+
+      .form-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px; /* Slightly smaller radius */
+        padding: 10px 12px; /* Reduced padding */
+        color: #fff;
+        font-size: 14px; /* Reduced font size */
+        transition: background 0.3s, border-color 0.3s;
+      }
+
+      .form-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .form-input:focus {
+        outline: none;
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* Container for the button and error message */
+      .form-actions {
+        display: flex;
+        justify-content: flex-end; /* Pushes button to the right */
+        align-items: center;
+        margin-top: 25px; /* Reduced margin */
+      }
+
+      .error-message {
+        color: #ff8a8a;
+        font-size: 13px; /* Reduced font size */
+        margin-right: auto; /* Pushes button away */
+      }
+
+      .form-button {
+        padding: 10px 20px; /* Reduced padding */
+        background: rgba(255, 108, 215, 0.2);
+        border: 1px solid rgba(255, 108, 215, 0.4);
+        color: #fff;
+        border-radius: 8px; /* Slightly smaller radius */
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .form-button:hover {
+        background: rgba(255, 108, 215, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 108, 215, 0.2);
+      }
+      /* ////////////////////////////////////////////////////// */
+      /* Glassmorphism style for the UserCard */
+      .glass-user-card {
+        width: 100%;
+        max-width: 320px; /* Smaller max-width for the card */
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        overflow: hidden; /* Important for containing the image */
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Image container */
+      .glass-user-card figure {
+        height: 280px; /* Control the image height */
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .glass-user-card figure img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .glass-user-card:hover figure img {
+        transform: scale(1.05); /* A subtle zoom effect on hover */
+      }
+
+      /* Body content of the card */
+      .glass-card-body {
+        padding: 15px 20px;
+        text-align: left; /* Or 'center' if you prefer */
+      }
+
+      .glass-card-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .glass-card-info {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-top: 5px;
+        min-height: 40px; /* Give 'about' section some consistent space */
+      }
+
+      /* Container for the action buttons */
+      .glass-card-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        padding: 0 20px 20px; /* Add padding to the bottom */
+        margin-top: auto; /* Pushes actions to the bottom of the card */
+      }
+
+      /* Base style for action buttons */
+      .action-button {
+        flex-grow: 1; /* Make buttons take up equal space */
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 14px;
+        background-color: transparent;
+      }
+
+      .action-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Specific style for the 'Ignore' button */
+      .action-button-ignore {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .action-button-ignore:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.25);
+      }
+
+      /* Specific style for the 'Interested' button */
+      .action-button-interested {
+        background-color: rgba(222, 76, 138, 0.3);
+        border-color: rgba(222, 76, 138, 0.5);
+      }
+
+      .action-button-interested:hover:not(:disabled) {
+        background-color: rgba(222, 76, 138, 0.5);
+        box-shadow: 0 4px 12px rgba(222, 76, 138, 0.2);
+      }
+      /* //////////////////////////////////////////////////// */
+      /* Main container to center the requests list card */
+      .requests-container {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        min-height: calc(
+          100vh - 80px
+        ); /* Adjust 80px based on your nav height */
+        color: #fff;
+      }
+
+      /* The main glass card that holds the list of requests */
+      .requests-list-card {
+        width: 100%;
+        max-width: 800px; /* A bit wider to accommodate list items */
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        padding: 20px 30px;
+      }
+
+      .requests-header {
+        font-size: 24px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 25px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Styling for each individual request row */
+      .request-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .request-item:last-child {
+        border-bottom: none; /* Remove border from the last item */
+      }
+
+      .request-user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .request-avatar img,
+      .request-avatar-initials {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .request-avatar-initials {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.3);
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .request-text-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .request-name {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .request-details {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .request-about {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-top: 4px;
+        max-width: 350px; /* Prevent 'about' text from being too long */
+      }
+
+      /* Container for the action buttons */
+      .request-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* Base style for request buttons */
+      .request-btn {
+        padding: 8px 16px;
+        border-radius: 7px;
+        border: 1px solid transparent;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 13px;
+      }
+
+      /* Accept button style (a nice teal/green) */
+      .request-btn-accept {
+        background-color: rgba(45, 212, 191, 0.2);
+        border-color: rgba(45, 212, 191, 0.4);
+      }
+      .request-btn-accept:hover {
+        background-color: rgba(45, 212, 191, 0.4);
+      }
+
+      /* Reject button style (a consistent pink/red) */
+      .request-btn-reject {
+        background-color: rgba(222, 76, 138, 0.2);
+        border-color: rgba(222, 76, 138, 0.4);
+      }
+      .request-btn-reject:hover {
+        background-color: rgba(222, 76, 138, 0.4);
+      }
+
+      /* Styling for loading/error/empty states */
+      .requests-state-container {
+        text-align: center;
+        padding: 50px 20px;
+        color: #fff;
+        opacity: 0.9;
+      }
+      /* //////////////////////////////FEED///////////////////// */
+      /* Main container to center the feed card */
+      .feed-container {
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Center vertically as well */
+        padding: 40px 20px;
+        min-height: calc(100vh - 80px); /* Adjust based on your nav height */
+        color: #fff;
+      }
+
+      /* A glass card for displaying states like errors or empty messages */
+      .feed-state-card {
+        width: 100%;
+        max-width: 380px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        padding: 30px 35px;
+        text-align: center;
+      }
+
+      .feed-state-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .feed-state-title.error {
+        color: #ff8a8a; /* A lighter red for dark backgrounds */
+      }
+
+      .feed-state-message {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 25px;
+        line-height: 1.5;
+      }
+
+      .feed-state-button {
+        padding: 10px 25px;
+        background: rgba(255, 108, 215, 0.2);
+        border: 1px solid rgba(255, 108, 215, 0.4);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .feed-state-button:hover {
+        background: rgba(255, 108, 215, 0.4);
+      }
+
+      /* Custom themed loading spinner */
+      .themed-loader-container {
+        text-align: center;
+      }
+      .themed-loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto; /* Center the spinner */
+      }
+      .themed-loader-text {
+        margin-top: 15px;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      /* /////////////////////////////////////Navbar///////////////// */
+      /* Main Navbar styling */
+      .glass-navbar {
+        background: rgba(
+          20,
+          20,
+          20,
+          0.4
+        ); /* Darker glass for better contrast */
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        color: #fff;
+      }
+
+      .navbar-brand {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+      .navbar-brand:hover {
+        color: #eee;
+      }
+
+      /* User section on the right */
+      .navbar-user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative; /* Needed for dropdown positioning */
+      }
+
+      .navbar-welcome {
+        opacity: 0.8;
+        font-size: 14px;
+      }
+
+      .navbar-avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .navbar-avatar:hover img {
+        transform: scale(1.1);
+      }
+
+      /* The dropdown menu */
+      .navbar-dropdown {
+        position: absolute;
+        top: 60px; /* Position below the navbar */
+        right: 0;
+        width: 220px;
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 8px;
+        list-style: none;
+        z-index: 1000;
+
+        /* For the show/hide transition */
+        opacity: 0;
+        transform: translateY(-10px);
+        visibility: hidden;
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+      }
+
+      .navbar-dropdown.open {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+      }
+
+      .dropdown-item a,
+      .dropdown-item button {
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        text-align: left;
+      }
+
+      .dropdown-item a:hover,
+      .dropdown-item button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .dropdown-badge {
+        background-color: #de4c8a;
+        color: white;
+        padding: 2px 6px;
+        font-size: 10px;
+        border-radius: 5px;
+      }
+      /* ////////////////////////////////LOGIN//////////////////////////// */
+      /* Main container to center the form on the page */
+      .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        color: #fff;
+      }
+
+      /* The main glass card for the form */
+      .auth-card {
+        width: 100%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        padding: 30px 35px;
+      }
+
+      .auth-title {
+        font-size: 28px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Styling for form groups (label + input) */
+      .auth-form-group {
+        margin-bottom: 20px;
+      }
+
+      .auth-label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 8px;
+        opacity: 0.8;
+      }
+
+      .auth-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: #fff;
+        font-size: 16px;
+        transition: background 0.3s, border-color 0.3s;
+      }
+
+      .auth-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .auth-input:focus {
+        outline: none;
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* Container for error message and button */
+      .auth-actions {
+        display: flex;
+        justify-content: flex-end; /* Pushes button to the right */
+        align-items: center;
+        margin-top: 10px;
+        min-height: 48px; /* Prevents layout shift when error appears */
+      }
+
+      .auth-error {
+        color: #ff8a8a;
+        font-size: 14px;
+        text-align: left;
+        margin-right: auto; /* Pushes button away */
+      }
+
+      /* The main action button */
+      .auth-button {
+        padding: 12px 25px;
+        background: rgba(222, 76, 138, 0.3);
+        border: 1px solid rgba(222, 76, 138, 0.5);
+        color: #fff;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 100px; /* Give button a minimum width */
+      }
+
+      .auth-button:hover:not(:disabled) {
+        background-color: rgba(222, 76, 138, 0.5);
+        box-shadow: 0 4px 12px rgba(222, 76, 138, 0.2);
+      }
+
+      .auth-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* For the toggle link at the bottom */
+      .auth-toggle {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .auth-toggle-link {
+        font-weight: 600;
+        color: #ff89b4; /* A bright, inviting pink */
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .auth-toggle-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Custom spinner for the loading state */
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      /* /////////////////////////////////EditProfile//////////////////// */
+      /* --- Photo Upload Specific Styles --- */
+      .photo-upload-group {
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .current-photo-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0px auto 15px auto;
+        background: rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        display: flex; /* For centering placeholder text */
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .current-photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .photo-placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+      }
+
+      .photo-input-field {
+        display: block; /* Make it take full width */
+        width: calc(100% - 20px); /* Adjust width */
+        max-width: 250px; /* Limit max width */
+        margin: 10px auto;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .photo-input-field::-webkit-file-upload-button {
+        visibility: hidden;
+        width: 0;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Custom button-like appearance for file input */
+      .photo-input-field::before {
+        content: "Choose Photo";
+        display: inline-block;
+        background: rgba(255, 108, 215, 0.2);
+        border: 1px solid rgba(255, 108, 215, 0.4);
+        color: #fff;
+        border-radius: 6px;
+        padding: 8px 15px;
+        outline: none;
+        white-space: nowrap;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      .photo-input-field:hover::before {
+        background: rgba(255, 108, 215, 0.4);
+      }
+
+      .photo-input-field:active::before {
+        background: rgba(255, 108, 215, 0.5);
+      }
+
+      .upload-status-text {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 5px;
+      }
+    </style>
   </head>
   <body>
+    <ul class="lights">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
